@@ -8,6 +8,8 @@ import com.aspirecn.hutooldemo.utils.ExcelUtils;
 import com.aspirecn.hutooldemo.utils.MultipartFileToFile;
 import com.sargeraswang.util.ExcelUtil.ExcelLogs;
 import com.sargeraswang.util.ExcelUtil.ExcelUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,25 +29,20 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/select")
+@Api(tags = "TeacherInfoController", description = "教师信息管理")
 public class TeacherInfoController {
     @Autowired
     private TeacherInfoService teacherInfoService;
 
-    /**
-     * 查询所有教师信息
-     * @return
-     */
-    @GetMapping
+    @RequestMapping(value = "listAll", method = RequestMethod.GET)
+    @ApiOperation("查询所有教师信息")
     public Result<User> findAll() {
         List<User> userList = teacherInfoService.findAll();
         return new Result<>(true, StatusCode.OK, "查询成功", userList);
     }
 
-    /**
-     * 添加教师信息
-     * @return
-     */
-    @PostMapping("/add")
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("添加教师信息")
     public Result<User> add(@RequestBody User user) {
         Integer add = teacherInfoService.add(user);
         if (add>0) {
@@ -54,12 +51,8 @@ public class TeacherInfoController {
         return new Result<>(false, StatusCode.ERROR, "添加失败");
     }
 
-    /**
-     * 删除教师信息
-     * @param id
-     * @return
-     */
-    @DeleteMapping("/{id}")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ApiOperation("删除教师信息")
     public Result<User> delete(@PathVariable Integer id ){
         Integer delete = teacherInfoService.delete(id);
         if (delete>0) {
@@ -68,47 +61,31 @@ public class TeacherInfoController {
         return new Result<>(false, StatusCode.ERROR, "删除失败");
     }
 
-    /**
-     * 根据id查询教师信息
-     * @param id
-     * @return
-     */
-    @GetMapping("/{id}")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ApiOperation("根据id查询教师信息")
     public Result<User> findById(@PathVariable Integer id) {
         User user = teacherInfoService.findById(id);
         return new Result<>(true, StatusCode.OK, "查询成功", user);
     }
 
-    /**
-     * 批量导出
-     *
-     * @param response
-     * @return
-     */
-    @RequestMapping("/export")
+
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
+    @ApiOperation("批量导出")
     public Result<?> importUser(HttpServletResponse response) {
         teacherInfoService.findAllUser(response);
         return new Result<>(true, StatusCode.OK, "导出成功");
     }
-    /**
-     * hutoo工具包批量导入
-     *
-     * @param
-     * @return
-     */
-    @RequestMapping("/import")
+
+
+    @RequestMapping(value = "/import", method = RequestMethod.POST)
+    @ApiOperation("hutoo工具包批量导入")
     public Result<?> importUser(MultipartFile file) throws Exception {
         teacherInfoService.importUser(file);
         return new Result<>(true, StatusCode.OK, "导入成功");
     }
 
-    /**
-     * 批量导入
-     * @param file
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/uploadExcel")
+    @ApiOperation("批量导入")
+    @RequestMapping(value = "/uploadExcel", method = RequestMethod.POST)
     public Object uploadExcel(@RequestParam MultipartFile file) throws Exception {
         teacherInfoService.uploadExcel(file);
         return new Result<>(true, StatusCode.OK, "导入成功");
